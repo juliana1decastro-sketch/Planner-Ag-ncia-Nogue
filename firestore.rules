@@ -1,0 +1,101 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // ===============================================================
+    // Assumed Data Model
+    // ===============================================================
+    //
+    // Collection: clients
+    // Fields: name, contactPerson, phone, email, socialMedia, notes, createdAt
+    //
+    // Collection: projects
+    // Fields: name, clientId, serviceType, briefing, startDate, deadline, responsible, status, createdAt
+    //
+    // Collection: tasks
+    // Fields: title, description, clientId, projectId, date, time, priority, status, createdAt
+    //
+    // Collection: finance
+    // Fields: type, description, amount, date, status, clientId, category, createdAt
+    //
+    // Collection: agency
+    // Fields: type, content, targetDate, status, createdAt
+    //
+    // ===============================================================
+
+    // Helper Functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return isAuthenticated() && 
+        (request.auth.token.email == "juliana1decastro@gmail.com");
+    }
+
+    // Validation Helpers
+    function hasRequiredFields(fields) {
+      return request.resource.data.keys().hasAll(fields);
+    }
+
+    function hasOnlyAllowedFields(fields) {
+      return request.resource.data.keys().hasOnly(fields);
+    }
+
+    // Domain Validators
+    function isValidClient(data) {
+      return hasRequiredFields(['name']) &&
+             data.name is string && data.name.size() > 0 && data.name.size() < 200;
+    }
+
+    function isValidProject(data) {
+      return hasRequiredFields(['name', 'clientId', 'status']) &&
+             data.name is string && data.name.size() > 0 &&
+             data.clientId is string &&
+             data.status in ['active', 'archived', 'deleted'];
+    }
+
+    function isValidTask(data) {
+      return hasRequiredFields(['title', 'status']) &&
+             data.title is string && data.title.size() > 0 &&
+             data.status in ['pending', 'in_progress', 'completed'];
+    }
+
+    function isValidFinance(data) {
+      return hasRequiredFields(['type', 'amount', 'date', 'status']) &&
+             data.type in ['income', 'expense'] &&
+             data.amount is number &&
+             data.status in ['paid', 'pending'];
+    }
+
+    function isValidAgency(data) {
+      return hasRequiredFields(['type', 'content']) &&
+             data.type in ['goal', 'idea', 'content_plan', 'note'] &&
+             data.content is string;
+    }
+
+    // Rules
+    match /clients/{clientId} {
+      allow read, write: if true;
+    }
+
+    match /projects/{projectId} {
+      allow read, write: if true;
+    }
+
+    match /tasks/{taskId} {
+      allow read, write: if true;
+    }
+
+    match /finance/{recordId} {
+      allow read, write: if true;
+    }
+
+    match /agency/{managementId} {
+      allow read, write: if true;
+    }
+    
+    match /users/{userId} {
+      allow read, write: if true;
+    }
+  }
+}

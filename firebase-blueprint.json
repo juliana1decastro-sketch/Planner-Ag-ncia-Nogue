@@ -1,0 +1,89 @@
+{
+  "entities": {
+    "Client": {
+      "title": "Client",
+      "description": "A client of the agency",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string", "description": "Company name" },
+        "contactPerson": { "type": "string", "description": "Name of the responsible person" },
+        "phone": { "type": "string", "description": "Contact phone" },
+        "email": { "type": "string", "description": "Contact email", "format": "email" },
+        "socialMedia": { "type": "string", "description": "Social media links" },
+        "notes": { "type": "string", "description": "General observations" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["name"]
+    },
+    "Project": {
+      "title": "Project",
+      "description": "A project for a client",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "clientId": { "type": "string" },
+        "serviceType": { "type": "string", "enum": ["video", "marketing", "social_media", "advertising", "branding", "other"] },
+        "briefing": { "type": "string" },
+        "startDate": { "type": "string", "format": "date" },
+        "deadline": { "type": "string", "format": "date" },
+        "responsible": { "type": "string" },
+        "status": { "type": "string", "enum": ["active", "archived", "deleted"] },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["name", "clientId", "status"]
+    },
+    "Task": {
+      "title": "Task",
+      "description": "A task in the planner",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "description": { "type": "string" },
+        "clientId": { "type": "string" },
+        "projectId": { "type": "string" },
+        "date": { "type": "string", "format": "date" },
+        "time": { "type": "string" },
+        "priority": { "type": "string", "enum": ["low", "medium", "high"] },
+        "status": { "type": "string", "enum": ["pending", "in_progress", "completed"] },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["title", "status"]
+    },
+    "FinanceRecord": {
+      "title": "Finance Record",
+      "description": "Income or expense record",
+      "type": "object",
+      "properties": {
+        "type": { "type": "string", "enum": ["income", "expense"] },
+        "description": { "type": "string" },
+        "amount": { "type": "number" },
+        "date": { "type": "string", "format": "date" },
+        "status": { "type": "string", "enum": ["paid", "pending"] },
+        "clientId": { "type": "string", "description": "For income only" },
+        "category": { "type": "string", "description": "For expense only" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["type", "amount", "date", "status"]
+    },
+    "AgencyManagement": {
+      "title": "Agency Management",
+      "description": "Strategic planning and administrative notes",
+      "type": "object",
+      "properties": {
+        "type": { "type": "string", "enum": ["goal", "idea", "content_plan", "note"] },
+        "content": { "type": "string" },
+        "targetDate": { "type": "string", "format": "date" },
+        "status": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["type", "content"]
+    }
+  },
+  "firestore": {
+    "clients": { "schema": "Client", "description": "Collection of clients" },
+    "projects": { "schema": "Project", "description": "Collection of projects" },
+    "tasks": { "schema": "Task", "description": "Collection of tasks" },
+    "finance": { "schema": "FinanceRecord", "description": "Collection of financial records" },
+    "agency": { "schema": "AgencyManagement", "description": "Collection of agency management items" }
+  }
+}
